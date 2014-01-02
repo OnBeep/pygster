@@ -251,8 +251,8 @@ def end_locking(lockfile_fd, lockfile_name):
 def main():
 
     dirsafe_logfile = log_file.replace('/','-')
-    logtail_state_file = '%s/logtail-%s%s.state' % (state_dir, class_name, dirsafe_logfile)
-    logtail_lock_file  = '%s/logtail-%s%s.lock' % (state_dir, class_name, dirsafe_logfile)
+    logtail_state_file = os.path.join(state_dir, '%s%s.state' % (class_name, dirsafe_logfile))
+    logtail_lock_file  = os.path.join(state_dir, '%s%s.lock' % (class_name, dirsafe_logfile))
 
     logger.info("Executing parser %s on logfile %s" % (class_name, log_file))
     logger.debug("Using state file %s" % logtail_state_file)
@@ -288,6 +288,9 @@ def main():
         except OSError, e:
             logger.info('Writing new state file and exiting. (Was either first run, or state file went missing.)')
             input = Pygtail(log_file, logtail_state_file)
+            # XXX: calling internal method
+            input._update_offset_file()
+            del input
             end_locking(lockfile, logtail_lock_file)
             sys.exit(0)
 
