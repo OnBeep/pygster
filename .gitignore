@@ -3,5 +3,13 @@
 *.state
 *.egg-info
 *.venv
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
 build
 dist
+run
+log
