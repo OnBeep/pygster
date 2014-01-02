@@ -5,7 +5,7 @@
 ###  logster
 ###
 ###  Tails a log and applies a log parser (that knows what to do with specific)
-###  types of entries in the log, then reports metrics to Ganglia and/or Graphite.
+###  types of entries in the log, then reports metrics to Graphite.
 ###
 ###  Usage:
 ###
@@ -15,6 +15,8 @@
 ###
 ###    $ logster -h
 ###
+###  Forked from the logster project
+###  (https://github.com/etsy/logster)
 ###
 ###  Copyright 2011, Etsy, Inc.
 ###
@@ -55,22 +57,18 @@ from time import time, strftime, gmtime
 from math import floor
 
 # Local dependencies
-from logster.logster_helper import LogsterParsingException, LockingError, CloudWatch, CloudWatchException
+from logster.logster_helper import LogsterParsingException, LockingError
 
 # Globals
-gmetric = "/usr/bin/gmetric"
 logtail = "/usr/sbin/logtail2"
-log_dir = "/var/log/logster"
-state_dir = "/var/run"
-send_nsca = "/usr/sbin/send_nsca"
+log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log")
+state_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "run")
 
 script_start_time = time()
 
 # Command-line options and parsing.
 cmdline = optparse.OptionParser(usage="usage: %prog [options] parser logfile",
     description="Tail a log file and filter each line to generate metrics that can be sent to common monitoring packages.")
-cmdline.add_option('--logtail', action='store', default=logtail,
-                    help='Specify location of logtail.  Default %s' % logtail)
 cmdline.add_option('--metric-prefix', '-p', action='store',
                     help='Add prefix to all published metrics. This is for people that may multiple instances of same service on same host.',
                     default='')
@@ -81,29 +79,17 @@ cmdline.add_option('--parser-help', action='store_true',
                     help='Print usage and options for the selected parser')
 cmdline.add_option('--parser-options', action='store', 
                     help='Options to pass to the logster parser such as "-o VALUE --option2 VALUE". These are parser-specific and passed directly to the parser.')
-cmdline.add_option('--gmetric-options', action='store',
-                    help='Options to pass to gmetric such as "-d 180 -c /etc/ganglia/gmond.conf" (default). These are passed directly to gmetric.',
-                    default='-d 180 -c /etc/ganglia/gmond.conf')
 cmdline.add_option('--graphite-host', action='store',
                     help='Hostname and port for Graphite collector, e.g. graphite.example.com:2003')
 cmdline.add_option('--statsd-host', action='store',
                     help='Hostname and port for statsd collector, e.g. statsd.example.com:8125')
-cmdline.add_option('--aws-key', action='store', default=os.getenv('AWS_ACCESS_KEY_ID'),
-                    help='Amazon credential key')
-cmdline.add_option('--aws-secret-key', action='store', default=os.getenv('AWS_SECRET_ACCESS_KEY_ID'),
-                    help='Amazon credential secret key')
-cmdline.add_option('--nsca-host', action='store',
-                    help='Hostname and port for NSCA daemon, e.g. nsca.example.com:5667')
-cmdline.add_option('--nsca-service-hostname', action='store',
-                    help='<host_name> value to use in nsca passive service check. Default is \"%default\"',
-                    default=socket.gethostname())
 cmdline.add_option('--state-dir', '-s', action='store', default=state_dir,
                     help='Where to store the logtail state file.  Default location %s' % state_dir)
 cmdline.add_option('--log-dir', '-l', action='store', default=log_dir,
                     help='Where to store the logster logfile.  Default location %s' % log_dir)
 cmdline.add_option('--output', '-o', action='append',
-                   choices=('graphite', 'ganglia', 'stdout', 'cloudwatch', 'nsca', 'statsd'),
-                   help="Where to send metrics (can specify multiple times). Choices are 'graphite', 'ganglia', 'cloudwatch', 'nsca' , 'statsd', or 'stdout'.")
+                   choices=('graphite', 'stdout', 'statsd'),
+                   help="Where to send metrics (can specify multiple times). Choices are 'graphite', 'statsd', or 'stdout'.")
 cmdline.add_option('--stdout-separator', action='store', default="_", dest="stdout_separator",
                     help='Seperator between prefix/suffix and name for stdout. Default is \"%default\".')
 cmdline.add_option('--dry-run', '-d', action='store_true', default=False,
@@ -124,12 +110,6 @@ if not options.output:
 if 'graphite' in options.output and not options.graphite_host:
     cmdline.print_help()
     cmdline.error("You must supply --graphite-host when using 'graphite' as an output type.")
-if 'cloudwatch' in options.output and not options.aws_key and not options.aws_secret_key:
-    cmdline.print_help()
-    cmdline.error("You must supply --aws-key and --aws-secret-key or Set environment variables. AWS_ACCESS_KEY_ID for --aws-key, AWS_SECRET_ACCESS_KEY_ID for --aws-secret-key")
-if 'nsca' in options.output and not options.nsca_host:
-    cmdline.print_help()
-    cmdline.error("You must supply --nsca-host when using 'nsca' as an output type.")
 
 class_name = arguments[0]
 if class_name.find('.') == -1:
@@ -169,16 +149,10 @@ def lineno():
 def submit_stats(parser, duration, options):
     metrics = parser.get_state(duration)
 
-    if 'ganglia' in options.output:
-        submit_ganglia(metrics, options)
     if 'graphite' in options.output:
         submit_graphite(metrics, options)
     if 'stdout' in options.output:
         submit_stdout(metrics, options)
-    if 'cloudwatch' in options.output:
-        submit_cloudwatch(metrics, options)
-    if 'nsca' in options.output:
-        submit_nsca(metrics, options)
     if 'statsd' in options.output:
         submit_statsd(metrics, options)
 
@@ -190,23 +164,6 @@ def submit_stdout(metrics, options):
         if (options.metric_suffix is not None):
             metric.name = metric.name + options.stdout_separator + options.metric_suffix
         print "%s %s %s" %(metric.timestamp, metric.name, metric.value)
-
-def submit_ganglia(metrics, options):
-    for metric in metrics:
-
-        if (options.metric_prefix != ""):
-            metric.name = options.metric_prefix + "_" + metric.name
-        if (options.metric_suffix is not None):
-            metric.name = metric.name + "_" + options.metric_suffix
-
-        gmetric_cmd = "%s %s --name %s --value %s --type %s --units \"%s\"" % (
-            gmetric, options.gmetric_options, metric.name, metric.value, metric.type, metric.units)
-        logger.debug("Submitting Ganglia metric: %s" % gmetric_cmd)
-
-        if (not options.dry_run):
-            os.system("%s" % gmetric_cmd)
-        else:
-            print "%s" % gmetric_cmd
 
 
 def submit_graphite(metrics, options):
@@ -236,58 +193,6 @@ def submit_graphite(metrics, options):
     finally:
         if (not options.dry_run):
             s.close()
-
-def submit_cloudwatch(metrics, options):
-    for metric in metrics:
-        
-        if (options.metric_prefix != ""):
-            metric.name = options.metric_prefix + "." + metric.name
-        if (options.metric_suffix is not None):
-            metric.name = metric.name + "." + options.metric_suffix
-        
-        metric.timestamp = strftime("%Y%m%dT%H:%M:00Z", gmtime(metric.timestamp))
-        metric.units = "None"
-        metric_string = "%s %s %s" % (metric.name, metric.value, metric.timestamp)
-        logger.debug("Submitting CloudWatch metric: %s" % metric_string)
-
-        if (not options.dry_run):
-            try:
-                cw = CloudWatch(options.aws_key, options.aws_secret_key, metric).get_instance_id()
-            except CloudWatchException:
-                logger.debug("Is this machine really amazon EC2?")
-                sys.exit(1)
-
-            try:
-                cw.put_data()
-            except CloudWatchException, e:
-                logger.debug(e.message)
-                sys.exit(1)
-        else:       
-            print metric_string
-
-
-def submit_nsca(metrics, options):
-    if (re.match("^[\w\.\-]+\:\d+$", options.nsca_host) is None):
-        raise Exception, "Invalid host:port found for NSCA: '%s'" % options.nsca_host
-
-    host = options.nsca_host.split(':')
-
-    for metric in metrics:
-        if (options.metric_prefix != ""):
-            metric.name = options.metric_prefix + "_" + metric.name
-        if (options.metric_suffix is not None):
-            metric.name = metric.name + "_" + options.metric_suffix
-
-        metric_string = "\t".join((options.nsca_service_hostname, metric.name, str(metric.value), metric.units,))
-        logger.debug("Submitting NSCA status: %s" % metric_string)
-
-        nsca_cmd = "echo '%s' | %s -H %s -p %s" % (metric_string, send_nsca, host[0], host[1],)
-
-        if (not options.dry_run):
-            os.system(nsca_cmd)
-        else:
-            print "%s" % nsca_cmd
-
 
 def submit_statsd(metrics, addr):
     if (not options.dry_run):
