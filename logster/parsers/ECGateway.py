@@ -89,6 +89,6 @@ class AsyncQueue(LogsterParser):
         for job, count in self.count.iteritems():
             result += MetricObject("%s.completed" % job, count, "Jobs completeted"),
         for job, exec_time in self.exec_time.iteritems():
-            result += MetricObject("%s.execution_time" % job, exec_time, "Job execution time"),
+            result += MetricObject("%s.total_exec_time" % job, exec_time, "Total job execution time in seconds"),
 
         return result
