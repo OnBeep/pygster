@@ -11,5 +11,3 @@
 *.un~
 build
 dist
-run
-log
