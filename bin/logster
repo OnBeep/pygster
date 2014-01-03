@@ -91,7 +91,7 @@ cmdline.add_option('--log-dir', '-l', action='store', default=log_dir,
 cmdline.add_option('--output', '-o', action='append',
                    choices=('graphite', 'stdout', 'statsd'),
                    help="Where to send metrics (can specify multiple times). Choices are 'graphite', 'statsd', or 'stdout'.")
-cmdline.add_option('--stdout-separator', action='store', default="_", dest="stdout_separator",
+cmdline.add_option('--stdout-separator', action='store', default=".", dest="stdout_separator",
                     help='Seperator between prefix/suffix and name for stdout. Default is \"%default\".')
 cmdline.add_option('--dry-run', '-d', action='store_true', default=False,
                     help='Parse the log file but send stats to standard output.')
