@@ -58,12 +58,15 @@ from math import floor
 
 from pygtail import Pygtail
 
+logster_directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(logster_directory)
+
 # Local dependencies
 from logster.logster_helper import LogsterParsingException, LockingError
 
 # Globals
-log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "log")
-state_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "run")
+log_dir = os.path.join(logster_directory, "log")
+state_dir = os.path.join(logster_directory, "run")
 
 script_start_time = time()
 
