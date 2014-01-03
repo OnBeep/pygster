@@ -8,7 +8,7 @@
 
 import csv
 import datetime
-import json
+import simplejson as json
 import re
 import time
 import sys
@@ -18,6 +18,16 @@ from logster.logster_helper import MetricObject, LogsterParser
 from logster.logster_helper import LogsterParsingException
 
 DATE, TIME, APP, MSG = 2,3,4,5
+
+def total_seconds(td):
+    # python2.4 backport: datetime.total_seconds()
+    #  NB: need real/float division
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10.0**6
+
+def strptime(date_string, format='%m/%d/%y %H:%M:%S'):
+    # python2.4 backport: datetime.datetime.strptime(date_string,'%m/%d/%y %H:%M:%S')
+    #  performing equiv from docs
+    return datetime.datetime(*(time.strptime(date_string, format)[0:6]))
 
 class AsyncQueue(LogsterParser):
     # TODO: change this to a super class
@@ -37,9 +47,9 @@ class AsyncQueue(LogsterParser):
                 if data[APP] != "COMPASS_ECCONNECT":
                     continue
 
-                s_logtime = '%s %s' % (fields[DATE],fields[TIME])
-                dt_logtime = datetime.datetime.strptime(s_logtime,'%m/%d/%y %H:%M:%S')
-                msg = json.loads(fields[MSG])
+                s_logtime = '%s %s' % (data[DATE],data[TIME])
+                dt_logtime = strptime(s_logtime)
+                msg = json.loads(data[MSG])
                 #print msg
 
                 # server, jobtype
@@ -47,10 +57,10 @@ class AsyncQueue(LogsterParser):
                 job = msg['JOBTYPE'].split('.')[-1]
 
                 # start, end, duration
-                start = datetime.datetime.strptime('%s %s' % (fields[DATE], msg['START']), '%m/%d/%y %H:%M:%S')
-                end = datetime.datetime.strptime('%s %s' % (fields[DATE], msg['END']), '%m/%d/%y %H:%M:%S')
+                start = strptime('%s %s' % (data[DATE], msg['START']))
+                end = strptime('%s %s' % (data[DATE], msg['END']))
                 td=end-start
-                duration=int(td.total_seconds())
+                duration=int(total_seconds(td))
 
                 # add one to number of executions of job
                 try:
@@ -76,7 +86,9 @@ class AsyncQueue(LogsterParser):
         result = []
 
         # Return a list of metrics objects
-        for job, count in self.count:
-            result += MetricObject("job.%s.completed" % job, count, "Jobs completeted"),
-        for job, exec_time in self.exec_time:
-            result += MetricObject("job.%s.execution_time" % job, exec_time, "Job execution time"),
+        for job, count in self.count.iteritems():
+            result += MetricObject("%s.completed" % job, count, "Jobs completeted"),
+        for job, exec_time in self.exec_time.iteritems():
+            result += MetricObject("%s.execution_time" % job, exec_time, "Job execution time"),
+
+        return result
