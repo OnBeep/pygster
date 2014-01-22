@@ -81,3 +81,35 @@ class AsyncQueue(ECBaseLogsterParser):
         for job, exec_time in self.exec_time.iteritems():
             yield MetricObject("%s.total_exec_time" % job, exec_time, "Total job execution time in seconds")
 
+class BillRun(ECBaseLogsterParser):
+    def __init__(self, option_string=None):
+        self.count = 0
+        self.exec_time = 0
+        self.query_exec_time = {}
+
+    def parse_line(self, line):
+        try:
+            msg = super(BillRun, self).parse_line(line)
+            self.count += 1
+            self.exec_time += msg['DURATION']
+
+            for key, value in msg.iteritems():
+                k = key.lower()
+                if k.startswith('query_'):
+                    try:
+                        self.query_exec_time[k] += value
+                    except KeyError:
+                        self.query_exec_time[k] = value
+
+        except LogsterParsingException:
+            raise
+        except Exception, e:
+            raise LogsterParsingException, ""
+
+    def get_state(self, duration):
+        yield MetricObject("completed", self.count, "Jobs completeted")
+        yield MetricObject("total_exec_time", self.exec_time, "Total job execution time in seconds")
+
+        for query, exec_time in self.query_exec_time.iteritems():
+            yield MetricObject("%s_total_exec_time" % query, exec_time, "Total query execution time in milliseconds")
+
