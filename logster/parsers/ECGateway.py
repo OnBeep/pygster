@@ -96,10 +96,11 @@ class BillRun(ECBaseLogsterParser):
             for key, value in msg.iteritems():
                 k = key.lower()
                 if k.startswith('query_'):
+                    v = int(value) / 1000.0
                     try:
-                        self.query_exec_time[k] += value
+                        self.query_exec_time[k] += v
                     except KeyError:
-                        self.query_exec_time[k] = value
+                        self.query_exec_time[k] = v
 
         except LogsterParsingException:
             raise
