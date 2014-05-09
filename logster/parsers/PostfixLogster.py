@@ -1,9 +1,9 @@
-###  A logster parser file that can be used to count the number
+###  A pygster parser file that can be used to count the number
 ###  of sent/deferred/bounced emails from a Postfix log, along with
 ### some other associated statistics.
 ###         
 ###  For example:
-###  sudo ./logster --dry-run --output=ganglia PostfixParser /var/log/maillog
+###  sudo ./pygster --dry-run --output=ganglia PostfixParser /var/log/maillog
 ###            
 ###            
 ###  Copyright 2011, Bronto Software, Inc.
@@ -22,8 +22,8 @@
 import time
 import re
         
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
         
 class PostfixLogster(LogsterParser):
         

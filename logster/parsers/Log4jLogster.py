@@ -1,10 +1,10 @@
 ###  Author: Mike Babineau <michael.babineau@gmail.com>, EA2D <http://ea2d.com>
 ###
-###  A sample logster parser file that can be used to count the number
+###  A sample pygster parser file that can be used to count the number
 ###  of events for each log level in a log4j log.
 ###
 ###  Example (note WARN,ERROR,FATAL is default):
-###  sudo ./logster --output=stdout Log4jLogster /var/log/example_app/app.log --parser-options '-l WARN,ERROR,FATAL'
+###  sudo ./pygster --output=stdout Log4jLogster /var/log/example_app/app.log --parser-options '-l WARN,ERROR,FATAL'
 ###
 ###
 ###  Logster copyright 2011, Etsy, Inc.
@@ -29,8 +29,8 @@ import time
 import re
 import optparse
 
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
 
 class Log4jLogster(LogsterParser):
     

@@ -1,8 +1,8 @@
-###  A sample logster parser file that can be used to count the number
+###  A sample pygster parser file that can be used to count the number
 ###  of responses and object size in the squid access.log
 ###
 ###  For example:
-###  sudo ./logster --dry-run --output=ganglia SquidLogster /var/log/squid/access.log
+###  sudo ./pygster --dry-run --output=ganglia SquidLogster /var/log/squid/access.log
 ###
 ###
 ###  Copyright 2011, Etsy, Inc.
@@ -26,8 +26,8 @@
 import time
 import re
 
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
 
 class SquidLogster(LogsterParser):
 

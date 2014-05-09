@@ -1,8 +1,8 @@
-###  A sample logster parser file that can be used to count the number
+###  A sample pygster parser file that can be used to count the number
 ###  of response codes found in an Apache access log.
 ###
 ###  For example:
-###  sudo ./logster --dry-run --output=ganglia SampleLogster /var/log/httpd/access_log
+###  sudo ./pygster --dry-run --output=ganglia SampleLogster /var/log/httpd/access_log
 ###
 ###
 
@@ -15,8 +15,8 @@ import time
 import sys
 from StringIO import StringIO
 
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
 
 DATE, TIME, APP, MSG = 2,3,4,5
 

@@ -28,17 +28,17 @@
 ###  Note: units are irrelevant for Graphite, as it does not support them; this functionality is to cater for Ganglia.
 ###
 ###  For example:
-###  sudo ./logster --output=stdout MetricLogster /var/log/example_app/app.log --parser-options '--percentiles 25,75,90'
+###  sudo ./pygster --output=stdout MetricLogster /var/log/example_app/app.log --parser-options '--percentiles 25,75,90'
 ###
 ###  Based on SampleLogster which is Copyright 2011, Etsy, Inc.
 
 import re
 import optparse
 
-from logster.parsers import stats_helper
+from pygster.parsers import stats_helper
 
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
 
 class MetricLogster(LogsterParser):
 

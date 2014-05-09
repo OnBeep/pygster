@@ -1,16 +1,16 @@
-###  A logster parser file that can be used to count the number of different
+###  A pygster parser file that can be used to count the number of different
 ###  messages in an Apache error_log
 ###
 ###  For example:
-###  sudo ./logster --dry-run --output=ganglia ErrorLogLogster /var/log/httpd/error_log
+###  sudo ./pygster --dry-run --output=ganglia ErrorLogLogster /var/log/httpd/error_log
 ###
 ###
 
 import time
 import re
 
-from logster.logster_helper import MetricObject, LogsterParser
-from logster.logster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, LogsterParser
+from pygster.pygster_helper import LogsterParsingException
 
 class ErrorLogLogster(LogsterParser):
 

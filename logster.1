@@ -1,8 +1,8 @@
-.TH LOGSTER "1" "December 2013" "logster 0.0.1"
+.TH LOGSTER "1" "December 2013" "pygster 0.0.1"
 .SH NAME
-logster \- generate metrics from logfiles
+pygster \- generate metrics from logfiles
 .SH SYNOPSIS
-.B logster
+.B pygster
 [\fIoptions\fR] \fIparser logfile\fR
 .SH DESCRIPTION
 Tail a log file and filter each line to generate metrics that can be sent to
@@ -30,7 +30,7 @@ metrics.
 Print usage and options for the selected parser
 .TP
 \fB\-\-parser\-options\fR=\fIPARSER_OPTIONS\fR
-Options to pass to the logster parser such as "\-o
+Options to pass to the pygster parser such as "\-o
 VALUE \fB\-\-option2\fR VALUE". These are parser\-specific and
 passed directly to the parser.
 .TP
@@ -59,7 +59,7 @@ Provide more verbose logging for debugging.
 .SH "SEE ALSO"
 .BR logtail (1)
 .SH AUTHOR
-logster was written by Etsy, Inc.
+pygster was written by Etsy, Inc.
 .PP
 This manual page was written by Andreas Rütten <AndreasRuetten@gmx.de>,
 for the Debian project (and may be used by others).
