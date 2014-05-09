@@ -2,34 +2,34 @@
 ###  of response codes found in an Apache access log.
 ###
 ###  For example:
-###  sudo ./pygster --dry-run --output=ganglia SampleLogster /var/log/httpd/access_log
+###  sudo ./pygster --dry-run --output=ganglia SamplePygster /var/log/httpd/access_log
 ###
 ###
 ###  Copyright 2011, Etsy, Inc.
 ###
-###  This file is part of Logster.
+###  This file is part of Pygster.
 ###
-###  Logster is free software: you can redistribute it and/or modify
+###  Pygster is free software: you can redistribute it and/or modify
 ###  it under the terms of the GNU General Public License as published by
 ###  the Free Software Foundation, either version 3 of the License, or
 ###  (at your option) any later version.
 ###
-###  Logster is distributed in the hope that it will be useful,
+###  Pygster is distributed in the hope that it will be useful,
 ###  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ###  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ###  GNU General Public License for more details.
 ###
 ###  You should have received a copy of the GNU General Public License
-###  along with Logster. If not, see <http://www.gnu.org/licenses/>.
+###  along with Pygster. If not, see <http://www.gnu.org/licenses/>.
 ###
 
 import time
 import re
 
-from pygster.pygster_helper import MetricObject, LogsterParser
-from pygster.pygster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, PygsterParser
+from pygster.pygster_helper import PygsterParsingException
 
-class SampleLogster(LogsterParser):
+class SamplePygster(PygsterParser):
 
     def __init__(self, option_string=None):
         '''Initialize any data structures or variables needed for keeping track
@@ -69,10 +69,10 @@ class SampleLogster(LogsterParser):
                     self.http_5xx += 1
 
             else:
-                raise LogsterParsingException, "regmatch failed to match"
+                raise PygsterParsingException, "regmatch failed to match"
 
         except Exception, e:
-            raise LogsterParsingException, "regmatch or contents failed with %s" % e
+            raise PygsterParsingException, "regmatch or contents failed with %s" % e
 
 
     def get_state(self, duration):

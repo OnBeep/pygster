@@ -22,10 +22,10 @@
 import time
 import re
         
-from pygster.pygster_helper import MetricObject, LogsterParser
-from pygster.pygster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, PygsterParser
+from pygster.pygster_helper import PygsterParsingException
         
-class PostfixLogster(LogsterParser):
+class PostfixPygster(PygsterParser):
         
     def __init__(self, option_string=None):
         '''Initialize any data structures or variables needed for keeping track
@@ -59,7 +59,7 @@ class PostfixLogster(LogsterParser):
                   self.numBounced += 1
 
         except Exception, e:
-            raise LogsterParsingException, "regmatch or contents failed with %s" % e
+            raise PygsterParsingException, "regmatch or contents failed with %s" % e
 
 
     def get_state(self, duration):

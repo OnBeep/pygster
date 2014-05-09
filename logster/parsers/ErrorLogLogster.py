@@ -2,17 +2,17 @@
 ###  messages in an Apache error_log
 ###
 ###  For example:
-###  sudo ./pygster --dry-run --output=ganglia ErrorLogLogster /var/log/httpd/error_log
+###  sudo ./pygster --dry-run --output=ganglia ErrorLogPygster /var/log/httpd/error_log
 ###
 ###
 
 import time
 import re
 
-from pygster.pygster_helper import MetricObject, LogsterParser
-from pygster.pygster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, PygsterParser
+from pygster.pygster_helper import PygsterParsingException
 
-class ErrorLogLogster(LogsterParser):
+class ErrorLogPygster(PygsterParser):
 
     def __init__(self, option_string=None):
         '''Initialize any data structures or variables needed for keeping track
@@ -52,10 +52,10 @@ class ErrorLogLogster(LogsterParser):
                     self.other += 1
 
             else:
-                raise LogsterParsingException, "regmatch failed to match"
+                raise PygsterParsingException, "regmatch failed to match"
 
         except Exception, e:
-            raise LogsterParsingException, "regmatch or contents failed with %s" % e
+            raise PygsterParsingException, "regmatch or contents failed with %s" % e
 
 
     def get_state(self, duration):

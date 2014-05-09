@@ -2,7 +2,7 @@
 ###  of response codes found in an Apache access log.
 ###
 ###  For example:
-###  sudo ./pygster --dry-run --output=ganglia SampleLogster /var/log/httpd/access_log
+###  sudo ./pygster --dry-run --output=ganglia SamplePygster /var/log/httpd/access_log
 ###
 ###
 
@@ -15,8 +15,8 @@ import time
 import sys
 from StringIO import StringIO
 
-from pygster.pygster_helper import MetricObject, LogsterParser
-from pygster.pygster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, PygsterParser
+from pygster.pygster_helper import PygsterParsingException
 
 DATE, TIME, APP, MSG = 2,3,4,5
 
@@ -28,7 +28,7 @@ def total_seconds(td):
 def strptime(date_string):
     return dateutil.parser.parse(date_string)
 
-class ECBaseLogsterParser(LogsterParser):
+class ECBasePygsterParser(PygsterParser):
     def parse_line(self, line):
         for data in csv.reader(StringIO(line)):
             if data[APP] != "COMPASS_ECCONNECT":
@@ -47,9 +47,9 @@ class ECBaseLogsterParser(LogsterParser):
 
             return  msg
 
-        raise LogsterParsingException, "Could not parse line"
+        raise PygsterParsingException, "Could not parse line"
 
-class AsyncQueue(ECBaseLogsterParser):
+class AsyncQueue(ECBasePygsterParser):
     def __init__(self, option_string=None):
         self.count = {}
         self.exec_time = {}
@@ -73,7 +73,7 @@ class AsyncQueue(ECBaseLogsterParser):
                 self.exec_time[job] = msg['DURATION']
 
         except Exception, e:
-            raise LogsterParsingException, ""
+            raise PygsterParsingException, ""
 
     def get_state(self, duration):
         for job, count in self.count.iteritems():
@@ -81,7 +81,7 @@ class AsyncQueue(ECBaseLogsterParser):
         for job, exec_time in self.exec_time.iteritems():
             yield MetricObject("%s.total_exec_time" % job, exec_time, "Total job execution time in seconds")
 
-class BillRun(ECBaseLogsterParser):
+class BillRun(ECBasePygsterParser):
     def __init__(self, option_string=None):
         self.count = 0
         self.exec_time = 0
@@ -102,10 +102,10 @@ class BillRun(ECBaseLogsterParser):
                     except KeyError:
                         self.query_exec_time[k] = v
 
-        except LogsterParsingException:
+        except PygsterParsingException:
             raise
         except Exception, e:
-            raise LogsterParsingException, ""
+            raise PygsterParsingException, ""
 
     def get_state(self, duration):
         yield MetricObject("completed", self.count, "Jobs completeted")

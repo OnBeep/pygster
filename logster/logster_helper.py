@@ -3,20 +3,20 @@
 ###
 ###  Copyright 2011, Etsy, Inc.
 ###
-###  This file is part of Logster.
+###  This file is part of Pygster.
 ###  
-###  Logster is free software: you can redistribute it and/or modify
+###  Pygster is free software: you can redistribute it and/or modify
 ###  it under the terms of the GNU General Public License as published by
 ###  the Free Software Foundation, either version 3 of the License, or
 ###  (at your option) any later version.
 ###  
-###  Logster is distributed in the hope that it will be useful,
+###  Pygster is distributed in the hope that it will be useful,
 ###  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ###  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ###  GNU General Public License for more details.
 ###  
 ###  You should have received a copy of the GNU General Public License
-###  along with Logster. If not, see <http://www.gnu.org/licenses/>.
+###  along with Pygster. If not, see <http://www.gnu.org/licenses/>.
 ###
 
 from time import time
@@ -31,7 +31,7 @@ class MetricObject(object):
         self.timestamp = timestamp
         self.metric_type = metric_type
 
-class LogsterParser(object):
+class PygsterParser(object):
     """Base class for pygster parsers"""
     def parse_line(self, line):
         """Take a line and do any parsing we need to do. Required for parsers"""
@@ -42,7 +42,7 @@ class LogsterParser(object):
         raise RuntimeError("Implement me!")
 
 
-class LogsterParsingException(Exception):
+class PygsterParsingException(Exception):
     """Raise this exception if the parse_line function wants to
         throw a 'recoverable' exception - i.e. you want parsing
         to continue but want to skip this line and log a failure."""

@@ -1,5 +1,5 @@
 ###  Author: Mark Crossfield <mark.crossfield@tradermedia.co.uk>, Mark Crossfield <mark@markcrossfield.co.uk>
-###  Rewritten and extended in collaboration with Jeff Blaine, who first contributed the MetricLogster.
+###  Rewritten and extended in collaboration with Jeff Blaine, who first contributed the MetricPygster.
 ###
 ###  Collects arbitrary metric lines and spits out aggregated
 ###  metric values (MetricObjects) based on the metric names
@@ -28,19 +28,19 @@
 ###  Note: units are irrelevant for Graphite, as it does not support them; this functionality is to cater for Ganglia.
 ###
 ###  For example:
-###  sudo ./pygster --output=stdout MetricLogster /var/log/example_app/app.log --parser-options '--percentiles 25,75,90'
+###  sudo ./pygster --output=stdout MetricPygster /var/log/example_app/app.log --parser-options '--percentiles 25,75,90'
 ###
-###  Based on SampleLogster which is Copyright 2011, Etsy, Inc.
+###  Based on SamplePygster which is Copyright 2011, Etsy, Inc.
 
 import re
 import optparse
 
 from pygster.parsers import stats_helper
 
-from pygster.pygster_helper import MetricObject, LogsterParser
-from pygster.pygster_helper import LogsterParsingException
+from pygster.pygster_helper import MetricObject, PygsterParser
+from pygster.pygster_helper import PygsterParsingException
 
-class MetricLogster(LogsterParser):
+class MetricPygster(PygsterParser):
 
     def __init__(self, option_string=None):
         '''Initialize any data structures or variables needed for keeping track
