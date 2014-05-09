@@ -8,8 +8,8 @@ Source:: https://github.com/OnBeep/pygster
 """
 
 __title__ = 'pygster'
-__version__ = '1.0.0'
-__build__ = '0x010000'
+__version__ = '1.0.1'
+__build__ = '0x010001'
 __author__ = 'Greg Albrecht  <gba@onbeep.com>'
 __copyright__ = 'Copyright 2014 OnBeep, Inc. and Contributors'
 __license__ = 'GNU General Public License, Version 3'
