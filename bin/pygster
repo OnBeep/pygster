@@ -269,10 +269,8 @@ def main():
             end_locking(lockfile, logtail_lock_file)
             sys.exit(0)
 
-        # FIXME: The following option was disabled as it is not compatible with
-        # the currently published pypi version of pygtail==0.2.2.
-        # copytruncate=True
-        input = pygtail.Pygtail(log_file, logtail_state_file)
+        input = pygtail.Pygtail(
+            log_file, logtail_state_file, copytruncate=True)
 
     except SystemExit, e:
         raise e

@@ -47,7 +47,7 @@ setup(
     url='https://github.com/OnBeep/pygster',
     setup_requires=['nose'],
     tests_require=['coverage', 'nose'],
-    install_requires=['pygtail==0.2.2'],
+    install_requires=['pygtail==0.3.0'],
     package_dir={'pygster': 'pygster'},
     packages=['pygster', 'pygster/parsers'],
     scripts=['bin/pygster'],
