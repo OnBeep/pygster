@@ -20,20 +20,20 @@
 ###
 ###  Copyright 2011, Etsy, Inc.
 ###
-###  This file is part of Logster.
+###  This file is part of Pygster.
 ###  
-###  Logster is free software: you can redistribute it and/or modify
+###  Pygster is free software: you can redistribute it and/or modify
 ###  it under the terms of the GNU General Public License as published by
 ###  the Free Software Foundation, either version 3 of the License, or
 ###  (at your option) any later version.
 ###  
-###  Logster is distributed in the hope that it will be useful,
+###  Pygster is distributed in the hope that it will be useful,
 ###  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ###  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ###  GNU General Public License for more details.
 ###  
 ###  You should have received a copy of the GNU General Public License
-###  along with Logster. If not, see <http://www.gnu.org/licenses/>.
+###  along with Pygster. If not, see <http://www.gnu.org/licenses/>.
 ###
 ###  Forked from the ganglia-logtailer project 
 ###  (http://bitbucket.org/maplebed/ganglia-logtailer):
@@ -62,7 +62,7 @@ sys.path.append(pygster_directory)
 from pygtail import Pygtail
 
 # Local dependencies
-from pygster.pygster_helper import LogsterParsingException, LockingError
+from pygster.pygster_helper import PygsterParsingException, LockingError
 
 # Globals
 log_dir = os.path.join(pygster_directory, "log")
@@ -313,7 +313,7 @@ def main():
         for line in input:
             try:
                 parser.parse_line(line)
-            except LogsterParsingException, e:
+            except PygsterParsingException, e:
                 # This should only catch recoverable exceptions (of which there
                 # aren't any at the moment).
                 logger.debug("Parsing exception caught at %s: %s" % (lineno(), e))
